@@ -23,6 +23,7 @@ public class Client
 
         // getting localhost ip
         InetAddress ip = InetAddress.getByName("26.84.204.9");
+
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
 
