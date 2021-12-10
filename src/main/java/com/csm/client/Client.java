@@ -75,6 +75,9 @@ public class Client
                             case Message.TAKE_SCREEN_SHOT -> {
                                 object.data = takeScreenShot();
                             }
+                            case Message.innit -> {
+                                object.data = getInfo();
+                            }
                             default -> {
 
                             }
@@ -127,5 +130,8 @@ public class Client
         } catch (final IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+    }
+    public static String getInfo(){
+        return "OS";
     }
 }

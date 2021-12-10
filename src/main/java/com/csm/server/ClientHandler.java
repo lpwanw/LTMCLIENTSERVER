@@ -1,6 +1,7 @@
 package com.csm.server;
 
 import com.csm.Message;
+import com.csm.SIModel;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +14,7 @@ public class ClientHandler implements Runnable{
     final ObjectOutputStream dos;
     Socket s;
     boolean isloggedin;
-
+    public SIModel info;
     // constructor
     public ClientHandler(Socket s, String name,
                          ObjectInputStream dis, ObjectOutputStream dos) {

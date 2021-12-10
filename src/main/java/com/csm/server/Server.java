@@ -1,5 +1,9 @@
 package com.csm.server;
 
+import com.csm.Message;
+import com.csm.SIModel;
+import com.csm.model.OsHWModel;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,11 +52,8 @@ public class Server {
                 mtch = new ClientHandler(s, "client " + i, dis, dos);
                 Thread t = new Thread(mtch);
                 System.out.println("Adding this client to active client list");
-
                 // add this client to active clients list
                 ar.add(mtch);
-
-                // start the thread.
                 t.start();
                 i++;
             }

@@ -1,9 +1,11 @@
 package com.csm.server;
 
 import com.csm.Message;
+import com.csm.SIModel;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 
 public class AdminHandler implements Runnable{
     private String name;
@@ -37,6 +39,14 @@ public class AdminHandler implements Runnable{
                     this.isloggedin=false;
                     this.s.close();
                     break;
+                }
+                if(received.command == Message.GET_LIST_USER && Objects.equals(received.toId, "all")){
+                    for (ClientHandler mc : Server.ar)
+                    {
+                        System.out.println(mc.name);
+                        received.data = "Lấy thông tin nhiều máy khách";
+                    }
+                    dos.writeObject(received);
                 }
                 String MsgToSend = received.data;
                 String recipient = received.toId;
