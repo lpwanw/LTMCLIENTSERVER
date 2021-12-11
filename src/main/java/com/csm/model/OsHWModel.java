@@ -1,8 +1,9 @@
 package com.csm.model;
 
-public class OsHWModel {
+import java.io.Serializable;
+
+public class OsHWModel implements Serializable {
     private String OSPreFix;
-    private String Hardware;
     private String proc;
     private String display;
 
@@ -12,14 +13,6 @@ public class OsHWModel {
 
     public void setOSPreFix(String OSPreFix) {
         this.OSPreFix = OSPreFix;
-    }
-
-    public String getHardware() {
-        return Hardware;
-    }
-
-    public void setHardware(String hardware) {
-        Hardware = hardware;
     }
 
     public String getProc() {

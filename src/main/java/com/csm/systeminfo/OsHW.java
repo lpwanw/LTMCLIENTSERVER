@@ -1,7 +1,10 @@
 package com.csm.systeminfo;
 
+import com.csm.SIModel;
+import com.csm.model.OsHWModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.ComputerSystem;
@@ -14,17 +17,15 @@ import java.util.List;
 
 public class OsHW {
 
-    public  String getOsPrefix(SystemInfo si) {
+    public static String getOsPrefix(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
 
         OperatingSystem os = si.getOperatingSystem();
         sb.append(String.valueOf(os));
-        sb.append("\n\n").append("Booted: ").append(Instant.ofEpochSecond(os.getSystemBootTime())).append('\n')
-                .append("Uptime: ");
         return sb.toString();
     }
 
-    public  String getHw(SystemInfo si) {
+    public static  String getHw(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
         ObjectMapper mapper = new ObjectMapper();
         ComputerSystem computerSystem = si.getHardware().getComputerSystem();
@@ -36,15 +37,15 @@ public class OsHW {
         return sb.toString();
     }
 
-    public  String getProc(SystemInfo si) {
+    public static  String getProc(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
         CentralProcessor proc = si.getHardware().getProcessor();
-        sb.append(proc.toString());
+        sb.append(proc.toString().split("\n")[0]);
 
         return sb.toString();
     }
 
-    public  String getDisplay(SystemInfo si) {
+    public static  String getDisplay(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
         List<Display> displays = si.getHardware().getDisplays();
         if (displays.isEmpty()) {
@@ -61,7 +62,7 @@ public class OsHW {
                     }
                 }
                 if (i++ > 0) {
-                    sb.append('\n');
+                    sb.append('|');
                 }
                 sb.append(name).append(": ");
                 int hSize = EdidUtil.getHcm(edid);
@@ -72,4 +73,23 @@ public class OsHW {
         return sb.toString();
     }
 
+    public static void main(String[] args) {
+        SystemInfo si = new SystemInfo();
+        SIModel siModel = new SIModel();
+        siModel.setNamePC("SDASD");
+        OsHWModel os = new OsHWModel();
+        os.setOSPreFix(getOsPrefix(si));
+        os.setDisplay(getDisplay(si));
+        os.setProc(getProc(si));
+        siModel.setOsHWModel(os);
+        String data = getInfo(siModel);
+        System.out.println(data);
+        System.out.println(getSIModelfromJson(data).getNamePC());
+    }
+    public static String getInfo(SIModel si){
+        return new Gson().toJson(si);
+    }
+    public static SIModel getSIModelfromJson(String json){
+        return new Gson().fromJson(json,SIModel.class);
+    }
 }

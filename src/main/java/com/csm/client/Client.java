@@ -1,6 +1,13 @@
 package com.csm.client;
 
 import com.csm.Message;
+import com.csm.SIModel;
+import com.csm.model.OsHWModel;
+import com.csm.systeminfo.OsHW;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import oshi.SystemInfo;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,7 +23,7 @@ import java.util.Scanner;
 public class Client
 {
     final static int ServerPort = 1234;
-
+    static SystemInfo si = new SystemInfo();
     public static void main(String args[]) throws UnknownHostException, IOException
     {
         Scanner scn = new Scanner(System.in);
@@ -74,20 +81,33 @@ public class Client
                         switch (msg.command){
                             case Message.TAKE_SCREEN_SHOT -> {
                                 object.data = takeScreenShot();
+                                dos.writeObject(object);
                             }
-                            case Message.innit -> {
-                                object.data = getInfo();
+                            case Message.LOG_OUT -> {
+                                Runtime.getRuntime().exec("shutdown -l");
+                            }
+                            case Message.SHUT_DOWN -> {
+                                Runtime.getRuntime().exec("shutdown -s -t 5");
+                            }
+                            case Message.GET_OS_INFO -> {
+                                OsHWModel os = new OsHWModel();
+                                os.setOSPreFix(OsHW.getOsPrefix(si));
+                                os.setDisplay(OsHW.getDisplay(si));
+                                os.setProc(OsHW.getProc(si));
+                                object.data = new Gson().toJson(os).replace("\n","");
+                                System.out.println(object.data);
+                                dos.writeObject(object);
                             }
                             default -> {
 
                             }
                         }
-                        dos.writeObject(object);
                     } catch (IOException e) {
                         Thread.currentThread().interrupt();
+                        System.err.println("Lỗi nè");
                         return;
                     } catch (ClassNotFoundException e){
-                        e.printStackTrace();
+                        System.err.println("Lỗi nè");
                         Thread.currentThread().interrupt();
                         return;
                     }
@@ -131,7 +151,10 @@ public class Client
             throw new UncheckedIOException(ioe);
         }
     }
-    public static String getInfo(){
-        return "OS";
+    public static String getInfo(SIModel si){
+        return new Gson().toJson(si);
+    }
+    public static SIModel getSIModelfromJson(String json){
+        return new Gson().fromJson(json,SIModel.class);
     }
 }

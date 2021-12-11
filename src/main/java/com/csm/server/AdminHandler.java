@@ -2,9 +2,15 @@ package com.csm.server;
 
 import com.csm.Message;
 import com.csm.SIModel;
+import com.csm.client.Client;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class AdminHandler implements Runnable{
@@ -34,23 +40,26 @@ public class AdminHandler implements Runnable{
             {
                 // receive the string
                 received = (Message) dis.readObject();
-                System.out.println(received);
+                System.out.println("adminget: "+ received.command);
                 if(received.command == Message.LOGOUT){
                     this.isloggedin=false;
                     this.s.close();
                     break;
                 }
                 if(received.command == Message.GET_LIST_USER && Objects.equals(received.toId, "all")){
+                    List<String> list = new ArrayList<>();
                     for (ClientHandler mc : Server.ar)
                     {
-                        System.out.println(mc.name);
-                        received.data = "Lấy thông tin nhiều máy khách";
+                        if(mc.isloggedin)
+                        list.add(mc.name);
                     }
+                    received.data = listSIModeltoJson(list);
+                    received.toId="admin";
+                    System.out.println(received.data);
                     dos.writeObject(received);
+                    continue;
                 }
-                String MsgToSend = received.data;
                 String recipient = received.toId;
-
                 // search for the recipient in the connected devices list.
                 // ar is the vector storing client of active users
                 for (ClientHandler mc : Server.ar)
@@ -78,5 +87,9 @@ public class AdminHandler implements Runnable{
             Thread.currentThread().interrupt();
             return;
         }
+    }
+    public static String listSIModeltoJson(List<String> list){
+        Type listType = new TypeToken<List<String>>() {}.getType();
+        return new Gson().toJson(list,listType);
     }
 }

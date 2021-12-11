@@ -2,7 +2,9 @@ package com.csm;
 
 import com.csm.model.*;
 
-public class SIModel {
+import java.io.Serializable;
+
+public class SIModel implements Serializable {
     private String namePC;
     private OsHWModel osHWModel;
 
