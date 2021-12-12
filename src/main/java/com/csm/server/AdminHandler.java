@@ -62,6 +62,7 @@ public class AdminHandler implements Runnable{
                 String recipient = received.toId;
                 // search for the recipient in the connected devices list.
                 // ar is the vector storing client of active users
+                boolean found = false;
                 for (ClientHandler mc : Server.ar)
                 {
                     // if the recipient is found, write on its
@@ -69,7 +70,17 @@ public class AdminHandler implements Runnable{
                     if (mc.name.equals(recipient) && mc.isloggedin)
                     {
                         mc.dos.writeObject(received);
+                        found = true;
                         break;
+                    }
+                }
+                if(recipient.contains("client")&&!found){
+                    switch (received.command){
+                        case Message.TAKE_SCREEN_SHOT, Message.GET_CLIPBOARD, Message.GET_OS_INFO, Message.GET_LIST_PROCESS -> {
+                            received.data = "error";
+                            received.toId="admin";
+                            dos.writeObject(received);
+                        }
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {

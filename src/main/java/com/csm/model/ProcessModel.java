@@ -1,5 +1,7 @@
 package com.csm.model;
 
+import com.google.gson.Gson;
+
 public class ProcessModel {
     private Integer PID;
     private Integer PPID;

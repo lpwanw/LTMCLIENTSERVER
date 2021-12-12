@@ -14,6 +14,9 @@ public class Message implements Serializable {
     public static final int LOG_OUT = 4;
     public static final int SHUT_DOWN = 5;
     public static final int innit = 0;
+    public static final int GET_CLIPBOARD = 6;
+    public static final int GET_LIST_PROCESS = 7;
+    public static final int KILL_PROCESS = 8;
     public String data;
     public String toId;
     public int command;

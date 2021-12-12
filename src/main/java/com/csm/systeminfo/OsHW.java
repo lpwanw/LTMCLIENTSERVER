@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.List;
 
 public class OsHW {
-
+    private static SystemInfo si = new SystemInfo();
     public static String getOsPrefix(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
 
