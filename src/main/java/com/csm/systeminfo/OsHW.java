@@ -1,7 +1,6 @@
 package com.csm.systeminfo;
 
 import com.csm.SIModel;
-import com.csm.model.OsHWModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -9,14 +8,22 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.Display;
+import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
 
-import java.time.Instant;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class OsHW {
     private static SystemInfo si = new SystemInfo();
+
     public static String getOsPrefix(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
 
@@ -25,7 +32,7 @@ public class OsHW {
         return sb.toString();
     }
 
-    public static  String getHw(SystemInfo si) {
+    public static String getHw(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
         ObjectMapper mapper = new ObjectMapper();
         ComputerSystem computerSystem = si.getHardware().getComputerSystem();
@@ -37,15 +44,14 @@ public class OsHW {
         return sb.toString();
     }
 
-    public static  String getProc(SystemInfo si) {
+    public static String getProc(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
         CentralProcessor proc = si.getHardware().getProcessor();
-        sb.append(proc.toString().split("\n")[0]);
-
+        sb.append(proc.toString());
         return sb.toString();
     }
 
-    public static  String getDisplay(SystemInfo si) {
+    public static String getDisplay(SystemInfo si) {
         StringBuilder sb = new StringBuilder();
         List<Display> displays = si.getHardware().getDisplays();
         if (displays.isEmpty()) {
@@ -73,23 +79,17 @@ public class OsHW {
         return sb.toString();
     }
 
-    public static void main(String[] args) {
+    public static String getProc() {
         SystemInfo si = new SystemInfo();
-        SIModel siModel = new SIModel();
-        siModel.setNamePC("SDASD");
-        OsHWModel os = new OsHWModel();
-        os.setOSPreFix(getOsPrefix(si));
-        os.setDisplay(getDisplay(si));
-        os.setProc(getProc(si));
-        siModel.setOsHWModel(os);
-        String data = getInfo(siModel);
-        System.out.println(data);
-        System.out.println(getSIModelfromJson(data).getNamePC());
+        CentralProcessor proc = si.getHardware().getProcessor();
+        return proc.toString();
     }
-    public static String getInfo(SIModel si){
+
+    public static String getInfo(SIModel si) {
         return new Gson().toJson(si);
     }
-    public static SIModel getSIModelfromJson(String json){
-        return new Gson().fromJson(json,SIModel.class);
+
+    public static SIModel getSIModelfromJson(String json) {
+        return new Gson().fromJson(json, SIModel.class);
     }
 }

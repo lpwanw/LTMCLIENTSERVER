@@ -39,9 +39,7 @@ final public class ClipboardData implements ClipboardOwner {
         Transferable contents = clipboard.getContents(null);
         boolean hasTransferableText =
                 (contents != null) &&
-                        contents.isDataFlavorSupported(DataFlavor.stringFlavor)
-                ;
-
+                        contents.isDataFlavorSupported(DataFlavor.stringFlavor);
         if ( hasTransferableText) {
             try {
                 result = (String)contents.getTransferData(DataFlavor.stringFlavor);

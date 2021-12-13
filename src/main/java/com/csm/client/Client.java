@@ -3,9 +3,7 @@ package com.csm.client;
 import com.csm.Message;
 import com.csm.SIModel;
 import com.csm.model.OsHWModel;
-import com.csm.systeminfo.ClipboardData;
-import com.csm.systeminfo.OsHW;
-import com.csm.systeminfo.Processes;
+import com.csm.systeminfo.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -100,6 +98,18 @@ public class Client
                             case Message.KILL_PROCESS -> {
                                 System.out.println("Taskkill /PID "+ msg.data +" /F");
                             }
+                            case Message.GET_DISK -> {
+                                object.data = FileStores.toJson();
+                                dos.writeObject(object);
+                            }
+                            case Message.GET_RAM -> {
+                                object.data = Memory.getMemory();
+                                dos.writeObject(object);
+                            }
+                            case Message.GET_CPU -> {
+                                object.data = OsHW.getCpuLoad();
+                                dos.writeObject(object);
+                            }
                             case Message.GET_OS_INFO -> {
                                 OsHWModel os = new OsHWModel();
                                 os.setOSPreFix(OsHW.getOsPrefix(si));
@@ -129,20 +139,7 @@ public class Client
         readMessage.start();
 
     }
-    public static String imgToBase64String(final RenderedImage img, final String formatName)
-    {
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        try
-        {
-            ImageIO.write(img, formatName, os);
-            return Base64.getEncoder().encodeToString(os.toByteArray());
-        }
-        catch (final IOException ioe)
-        {
-            throw new UncheckedIOException(ioe);
-        }
-    }
     public static String takeScreenShot(){
         try {
             Robot r = new Robot();
@@ -159,6 +156,20 @@ public class Client
         try {
             return ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(base64String)));
         } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
+    }
+    public static String imgToBase64String(final RenderedImage img, final String formatName)
+    {
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        try
+        {
+            ImageIO.write(img, formatName, os);
+            return Base64.getEncoder().encodeToString(os.toByteArray());
+        }
+        catch (final IOException ioe)
+        {
             throw new UncheckedIOException(ioe);
         }
     }

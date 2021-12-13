@@ -6,7 +6,6 @@ public class OsHWModel implements Serializable {
     private String OSPreFix;
     private String proc;
     private String display;
-
     public String getOSPreFix() {
         return OSPreFix;
     }

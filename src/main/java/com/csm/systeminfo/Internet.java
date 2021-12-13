@@ -41,11 +41,5 @@ public class Internet {
     }
 
     public static void main(String [] args){
-        Internet internet = new Internet();
-        SystemInfo si = new SystemInfo();
-        for(InternetModel internetModel : internet.GetInfo(si)){
-            System.out.println(internetModel.getName() + "---" + internetModel.getIndex() + "---" +  internetModel.getSpeed() + "---" +
-                    internetModel.getMACAdress()+ "---"  + internetModel.getIPV4()+ "---" + internetModel.getIPV6());
-        }
     }
 }
