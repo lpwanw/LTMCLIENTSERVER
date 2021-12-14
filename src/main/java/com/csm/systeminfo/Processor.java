@@ -16,13 +16,7 @@ public class Processor {
         double d = cpu.getSystemCpuLoadBetweenTicks(oldTicks);
         oldTicks = cpu.getSystemCpuLoadTicks();
 
-        System.out.println(String.format("%.1f",
-                100d * d ));
+        System.out.printf("%.1f%n",
+                100d * d );
     }
-    public static void main(String[] args){
-        while(true)
-
-            getCpuPercent();
-    }
-
 }

