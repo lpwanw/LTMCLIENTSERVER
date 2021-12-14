@@ -34,7 +34,7 @@ public class Client
         //Thanh: 26.91.242.109
         //Minh: 26.250.54.191
         //Tây: 26.84.204.9
-        InetAddress ip = InetAddress.getByName("26.250.54.191");
+        InetAddress ip = InetAddress.getByName("26.91.242.109");
 
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
@@ -125,11 +125,9 @@ public class Client
                                 os.setDisplay(OsHW.getDisplay(si));
                                 os.setProc(OsHW.getProc(si));
                                 object.data = new Gson().toJson(os).replace("\n","");
-                                System.out.println(object.data);
                                 dos.writeObject(object);
                             }
                             default -> {
-
                             }
                         }
                     } catch (IOException e) {

