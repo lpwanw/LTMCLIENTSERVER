@@ -35,7 +35,7 @@ public class Client
         //Thanh: 26.91.242.109
         //Minh: 26.250.54.191
         //Tây: 26.84.204.9
-        InetAddress ip = InetAddress.getByName("26.84.204.9");
+        InetAddress ip = InetAddress.getByName("localhost");
 
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
