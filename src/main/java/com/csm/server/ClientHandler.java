@@ -37,7 +37,7 @@ public class ClientHandler implements Runnable{
                 // receive the string
                 received = (Message) this.dis.readObject();
 
-                System.out.println("client get: " + received);
+                System.out.println("client get: " + received.command);
 
                 if(received.command == Message.LOGOUT){
                     this.isloggedin=false;

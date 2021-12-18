@@ -1,17 +1,17 @@
 package com.csm.server;
 
 import com.csm.Message;
-import com.csm.SIModel;
-import com.csm.client.Client;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class AdminHandler implements Runnable{
     private String name;
@@ -19,7 +19,7 @@ public class AdminHandler implements Runnable{
     final ObjectOutputStream dos;
     Socket s;
     boolean isloggedin;
-
+    Thread CPULOAD;
     // constructor
     public AdminHandler(Socket s, String name,
                         ObjectInputStream dis, ObjectOutputStream dos) {
@@ -57,6 +57,47 @@ public class AdminHandler implements Runnable{
                     received.toId="admin";
                     System.out.println(received.data);
                     dos.writeObject(received);
+                    continue;
+                }
+                if(received.command == Message.OPEN_SOCKET_CPU){
+                    int port = new Random().nextInt()%1000 + 4000;
+                    ServerSocket ss = new ServerSocket(port);
+                    System.out.println(port);
+                    received.data = port + "";
+                    dos.writeObject(received);
+                    Socket s;
+                    s = ss.accept();
+                    ObjectOutputStream dosAdmin = new ObjectOutputStream(s.getOutputStream());
+                    ObjectInputStream disAdmin = new ObjectInputStream(s.getInputStream());
+                    Message sendConnectInfo = new Message();
+                    sendConnectInfo.command = Message.OPEN_SOCKET_CPU;
+                    sendConnectInfo.data = port + "";
+                    for (ClientHandler mc : Server.ar)
+                    {
+                        if (mc.name.equals(received.toId) && mc.isloggedin)
+                        {
+                            mc.dos.writeObject(received);
+                            break;
+                        }
+                    }
+                    s = ss.accept();
+                    ObjectOutputStream dosClient = new ObjectOutputStream(s.getOutputStream());
+                    ObjectInputStream disClient = new ObjectInputStream(s.getInputStream());
+                    CPULOAD = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while(!Thread.currentThread().isInterrupted()){
+                                try {
+                                    Message msg = (Message) disClient.readObject();
+                                    dosAdmin.writeObject(msg);
+                                } catch (IOException | ClassNotFoundException e) {
+                                    Thread.currentThread().interrupt();
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                    CPULOAD.start();
                     continue;
                 }
                 String recipient = received.toId;
