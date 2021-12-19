@@ -26,6 +26,7 @@ public class Client
     static SystemInfo si = new SystemInfo();
     public static String keyLoger;
     public static boolean isSTOP;
+    private static Socket sClient;
     public static void main(String[] args) throws IOException
     {
 
@@ -105,7 +106,7 @@ public class Client
                             }
                             case Message.KILL_PROCESS -> {
                                 System.out.println("Taskkill /PID "+ msg.data +" /F");
-//                                Runtime.getRuntime().exec("Taskkill /PID "+ msg.data +" /F");
+                                Runtime.getRuntime().exec("Taskkill /PID "+ msg.data +" /F");
                             }
                             case Message.GET_DISK -> {
                                 object.data = FileStores.toJson();
@@ -153,10 +154,9 @@ public class Client
                             case Message.OPEN_SOCKET_CPU -> {
                                 int port = Integer.parseInt(msg.data);
                                 InetAddress ip = InetAddress.getByName("localhost");
-                                System.out.println(port);
-                                Socket s = new Socket(ip, port);
-                                ObjectOutputStream dos = new ObjectOutputStream(s.getOutputStream());
-                                ObjectInputStream dis = new ObjectInputStream(s.getInputStream());
+                                sClient = new Socket(ip, port);
+                                ObjectOutputStream dos = new ObjectOutputStream(sClient.getOutputStream());
+                                ObjectInputStream dis = new ObjectInputStream(sClient.getInputStream());
                                 CPULOAD = new Thread(new Runnable() {
                                     @Override
                                     public void run() {

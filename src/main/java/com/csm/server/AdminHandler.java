@@ -18,9 +18,12 @@ public class AdminHandler implements Runnable{
     final ObjectInputStream dis;
     final ObjectOutputStream dos;
     Socket s;
+    Socket sAdmin;
+    Socket sClient;
+    ServerSocket ssCPU;
     boolean isloggedin;
     Thread CPULOAD;
-    // constructor
+    int cpuPort = 40001;
     public AdminHandler(Socket s, String name,
                         ObjectInputStream dis, ObjectOutputStream dos) {
         this.dis = dis;
@@ -60,18 +63,17 @@ public class AdminHandler implements Runnable{
                     continue;
                 }
                 if(received.command == Message.OPEN_SOCKET_CPU){
-                    int port = new Random().nextInt()%1000 + 4000;
-                    ServerSocket ss = new ServerSocket(port);
-                    System.out.println(port);
-                    received.data = port + "";
+                    cpuPort = new Random().nextInt()%10000 + 40000;
+                    ssCPU = new ServerSocket(cpuPort);
+                    received.data = cpuPort + "";
                     dos.writeObject(received);
                     Socket s;
-                    s = ss.accept();
-                    ObjectOutputStream dosAdmin = new ObjectOutputStream(s.getOutputStream());
-                    ObjectInputStream disAdmin = new ObjectInputStream(s.getInputStream());
+                    sAdmin = ssCPU.accept();
+                    ObjectOutputStream dosAdmin = new ObjectOutputStream(sAdmin.getOutputStream());
+                    ObjectInputStream disAdmin = new ObjectInputStream(sAdmin.getInputStream());
                     Message sendConnectInfo = new Message();
                     sendConnectInfo.command = Message.OPEN_SOCKET_CPU;
-                    sendConnectInfo.data = port + "";
+                    sendConnectInfo.data = cpuPort + "";
                     for (ClientHandler mc : Server.ar)
                     {
                         if (mc.name.equals(received.toId) && mc.isloggedin)
@@ -80,9 +82,9 @@ public class AdminHandler implements Runnable{
                             break;
                         }
                     }
-                    s = ss.accept();
-                    ObjectOutputStream dosClient = new ObjectOutputStream(s.getOutputStream());
-                    ObjectInputStream disClient = new ObjectInputStream(s.getInputStream());
+                    sClient = ssCPU.accept();
+                    ObjectOutputStream dosClient = new ObjectOutputStream(sClient.getOutputStream());
+                    ObjectInputStream disClient = new ObjectInputStream(sClient.getInputStream());
                     CPULOAD = new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -92,6 +94,13 @@ public class AdminHandler implements Runnable{
                                     dosAdmin.writeObject(msg);
                                 } catch (IOException | ClassNotFoundException e) {
                                     Thread.currentThread().interrupt();
+                                    try {
+                                        ssCPU.close();
+                                        sAdmin.close();
+                                        sClient.close();
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
                                     e.printStackTrace();
                                 }
                             }
